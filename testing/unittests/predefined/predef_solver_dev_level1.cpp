@@ -1,4 +1,3 @@
-#include <physengine/solvers/solver_dev_level0.h>
 #include <physengine/solvers/solver_dev_level1.h>
 #include <physengine/bits/types_ext.h>
 
@@ -51,7 +50,7 @@ struct SolverDevStep1_Fixture001 : ::testing::Test {
 
 TEST_F(SolverDevStep1_Fixture001, Test001)
 {
-  solver_dev::level0::solve(*m_fixture, 1s);
+  solver_dev::level1::solve(*m_fixture, 1s);
 
   auto no_rbs = m_fixture->noRigidBodies();
   for( auto i = 0; i < no_rbs; ++i )

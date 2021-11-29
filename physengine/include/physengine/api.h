@@ -12,7 +12,7 @@ namespace dte3607::physengine::api
 {
 
   // SOLVER
-  template <SolverDevFixture T>
+  template <concepts::SolverFixture T>
   void solve(T& scenario, types::NanoSeconds timestep)
   {
     // Call another solver !_!

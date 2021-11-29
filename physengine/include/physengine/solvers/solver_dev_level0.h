@@ -33,16 +33,16 @@ namespace dte3607::physengine::solver_dev::level0
   {
 
     auto no_rbs = scenario.noRigidBodies();
-    for( auto i = 0; i < no_rbs; ++i )
+    for( auto rid = 0; rid < no_rbs; ++rid )
     {
       auto constexpr NonFixed = Fixture_T::RBMode::NonFixed;
-      if (scenario.mode(i) not_eq NonFixed) continue;
+      if (scenario.mode(rid) not_eq NonFixed) continue;
 
       auto const [lin_traj, accel] = example_impl::computeLinearTrajectory(
-        scenario.globalVelocity(i), scenario.externalForces(), timestep);
+        scenario.globalVelocity(rid), scenario.externalForces(), timestep);
 
-      scenario.translateParent(i,lin_traj);
-      scenario.addAcceleration(i, accel);
+      scenario.translateParent(rid,lin_traj);
+      scenario.addAcceleration(rid, accel);
     }
   }
 

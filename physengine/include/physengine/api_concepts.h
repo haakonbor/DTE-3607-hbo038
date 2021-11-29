@@ -12,15 +12,32 @@ namespace dte3607::physengine::api::concepts
 {
 
   template <typename Fixture_T>
+  concept SolverFixtureTypes = requires
+  {
+    // Basic types
+    typename Fixture_T::ValueType;
+    typename Fixture_T::Point3;
+    typename Fixture_T::Point3H;
+    typename Fixture_T::Vector3;
+    typename Fixture_T::Vector3H;
+    typename Fixture_T::Timepoint;
+
+    // Environment types
+    typename Fixture_T::Forces;
+
+    // Rigid body types
+    typename Fixture_T::RBMode;
+    typename Fixture_T::RBState;
+  };
+
+  template <typename Fixture_T>
   concept SolverFixtureLevel0 =
+
+    SolverFixtureTypes<Fixture_T> and
 
     // getters (functions must be marked with const)
     requires(Fixture_T const& fixture, size_t rid)
   {
-
-    // Types
-    typename Fixture_T::RigidBody;
-    typename Fixture_T::RBShape;
 
 
     // Fixture Info Query
@@ -69,6 +86,11 @@ namespace dte3607::physengine::api::concepts
   template <typename Fixture_T>
   concept SolverFixtureLevel1 = SolverFixtureLevel0<Fixture_T>;
 
+
+
+
+  template <typename Fixture_T>
+  concept SolverFixture = SolverFixtureLevel1<Fixture_T>;
 
 }   // namespace dte3607::physengine::api::concepts
 

@@ -1,5 +1,5 @@
 #include <physengine/solvers/solver_dev_level1.h>
-#include <physengine/bits/types_ext.h>
+#include <physengine/bits/types_oop.h>
 
 // gtest
 #include <gtest/gtest.h>   // googletest header file
@@ -53,12 +53,14 @@ TEST_F(SolverDevStep1_Fixture001, Test001)
   solver_dev::level1::solve(*m_fixture, 1s);
 
   auto no_rbs = m_fixture->noRigidBodies();
-  for( auto i = 0; i < no_rbs; ++i )
+  for( auto rid = 0; rid < no_rbs; ++rid )
   {
+    // Skip the fixed objects in the fixture scenario
+    if (m_fixture->mode(rid) == TestFixture::RBMode::Fixed) continue;
 
     // Ask for global frame position of object nr. i
-    auto const pos = m_fixture->globalFramePosition(i);
-    EXPECT_TRUE(pos[0] < 10);
+    auto const pos = m_fixture->globalFramePosition(rid);
+    EXPECT_LT(pos[0], 10);
   }
 }
 

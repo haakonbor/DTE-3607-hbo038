@@ -249,6 +249,7 @@ namespace dte3607::physengine::types_ext
       auto& rb = m_rigid_bodies.back();
       rb->m_object.translateParent(translation);
       rb->setMode(RigidBody::Mode::NonFixed);
+      rb->setVelocity(velocity);
 
       // Create Shape
       m_rb_shapes.emplace_back(

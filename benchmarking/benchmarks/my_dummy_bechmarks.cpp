@@ -29,14 +29,14 @@ using namespace dte3607::benchmarking::predef;
 BENCHMARK_DEFINE_F(GoldDummyBenchmarkF, dummy01)
 (benchmark::State& st)
 {
-  for (auto const& _ : st)
+  for ([[maybe_unused]]auto const& _ : st)
     std::cout << "Hello world!\n";
 }
 
 BENCHMARK_DEFINE_F(GoldDummyBenchmarkF, dummy02)
 (benchmark::State& st)
 {
-  for (auto const& _ : st)
+  for ([[maybe_unused]]auto const& _ : st)
     std::cout << "Hello world!" << std::endl;
 }
 

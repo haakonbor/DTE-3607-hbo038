@@ -10,9 +10,9 @@ namespace dte3607::physengine::mechanics
 {
 
 
-  inline types::Vector3
-  computeImpactResponseSphereFixedPlane(types::Vector3 const& sphere_v,
-                                        types::Vector3 const& fplane_n)
+  inline types::Vector3 computeImpactResponseSphereFixedPlane(
+    [[maybe_unused]] types::Vector3 const& sphere_v,
+    [[maybe_unused]] types::Vector3 const& fplane_n)
   {
     return {};
   }

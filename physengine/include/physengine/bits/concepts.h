@@ -11,37 +11,6 @@
 namespace dte3607::physengine::concepts
 {
 
-//  template <typename Fixture_T>
-//  concept SolverFixtureTypes = requires
-//  {
-//    // Basic types
-//    typename Fixture_T::ValueType;
-//    typename Fixture_T::Point3;
-//    typename Fixture_T::Point3H;
-//    typename Fixture_T::Vector3;
-//    typename Fixture_T::Vector3H;
-//    typename Fixture_T::Timepoint;
-
-//    // Environment types
-//    typename Fixture_T::Forces;
-
-//    // Rigid body types
-//    typename Fixture_T::RBMode;
-//    typename Fixture_T::RBState;
-//  };
-
-
-  template <typename Fixture_T>
-  concept SolverFixtureTypes =
-
-      requires
-  {
-    // Basic types
-    typename Fixture_T::ValueType;
-    typename Fixture_T::Point3;
-    typename Fixture_T::Vector3;
-  }
-      ;
 
   template <typename Fixture_T>
   concept SolverFixtureLevel0 =
@@ -70,19 +39,19 @@ namespace dte3607::physengine::concepts
     // Query the global frame of rigid body with ID
     {
       fixture.globalFramePosition(rid)
-      } -> std::convertible_to<typename types::Point3>;
+      } -> std::convertible_to<types::Point3>;
   }
 
   and
 
     // setters
-    requires(Fixture_T fixture, types::ValueType value,
-             typename Fixture_T::Vector3 vector)
+    requires(Fixture_T fixture, types::ValueType value, types::Vector3 vector)
   {
     {
       fixture.setGravity(vector)
       } -> std::same_as<void>;
 
+    // Fixture construction
     {
       fixture.createSphere(value, vector, vector, value)
       } -> std::same_as<void>;
@@ -107,64 +76,73 @@ namespace dte3607::physengine::concepts
     // Fixture Info Query
     {
       fixture.externalForces()
-      } -> std::convertible_to<typename Fixture_T::Forces>;
+      } -> std::convertible_to<types::Vector3>;
 
     {
       fixture.noRigidBodies()
       } -> std::convertible_to<size_t>;
 
+  {
+    fixture.nonFixedSpheres()
+    } -> std::same_as<std::vector<size_t>>;
+
+  {
+    fixture.fixedInfPlanes()
+    } -> std::same_as<std::vector<size_t>>;
+
+  {
+    fixture.rbSphereRadius(rid)
+    } -> std::convertible_to<types::ValueType>;
+
+  {
+    fixture.rbPlaneNormal(rid)
+    } -> std::convertible_to<types::Vector3>;
+
 
     // Rigid Body Info Query
     {
       fixture.globalFramePosition(rid)
-      } -> std::convertible_to<typename Fixture_T::Point3>;
-
-    {
-      fixture.globalVelocity(rid)
-      } -> std::convertible_to<typename Fixture_T::Vector3>;
-
-    {
-      fixture.mode(rid)
-      } -> std::convertible_to<typename Fixture_T::RBMode>;
+      } -> std::convertible_to<types::Point3>;
   }
 
   and
 
     // setters
-    requires(Fixture_T fixture, size_t rid, typename Fixture_T::Vector3 vec)
+    requires(Fixture_T fixture, types::ValueType value, types::Vector3 vector)
   {
 
-    //
-
-    // Rigid Body Actions
+    // Fixture construction
     {
-      fixture.translateParent(rid, vec)
+      fixture.createFixedInfPlane(vector, vector, value)
       } -> std::same_as<void>;
-
-    {
-      fixture.addAcceleration(rid, vec)
-      } -> std::convertible_to<void>;
   }
 
   ;
 
 
   template <typename Fixture_T>
-  concept SolverFixtureLevel3 = SolverFixtureLevel2<Fixture_T>
+  concept SolverFixtureLevel3 = SolverFixtureLevel2<Fixture_T> and
 
-//    and
+    // getters (functions must be marked with const)
+    requires(Fixture_T const& fixture, size_t rid)
+  {
+    // Fixture Info Query
+    {
+      fixture.mode(rid)
+      } -> std::convertible_to<types::RBMode>;
 
-//    requires
-//  {
-//    {};
-//  }
+    {
+      fixture.state(rid)
+      } -> std::convertible_to<types::RBState>;
+  }
 
   ;
 
 
 
+
   template <typename Fixture_T>
-  concept SolverFixtureLevel4 = SolverFixtureLevel3<Fixture_T>;
+  concept SolverFixtureLevel4 = SolverFixtureLevel2<Fixture_T>;
 
 
 

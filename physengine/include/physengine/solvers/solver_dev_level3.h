@@ -8,8 +8,8 @@ namespace dte3607::physengine::solver_dev::level3
 {
 
   template <concepts::SolverFixtureLevel3 Fixture_T>
-  void solve([[maybe_unused]] Fixture_T& scenario,
-             [[maybe_unused]] types::NanoSeconds  timestep)
+  void solve([[maybe_unused]] Fixture_T&         scenario,
+             [[maybe_unused]] types::NanoSeconds timestep)
   {
   }
 

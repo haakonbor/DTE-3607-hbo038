@@ -46,6 +46,10 @@ namespace dte3607::physengine::types
   using ProjectiveSpaceObject
     = gm::SpaceObject<gm::spaces::ProjectiveSpace<ValueType, 3>>;
 
+  // Rigid body
+  enum class RBMode { NonFixed, Fixed };
+  enum class RBState { Free, Resting, Sliding, Rolling };
+
 
 }   // namespace dte3607::physengine::types
 

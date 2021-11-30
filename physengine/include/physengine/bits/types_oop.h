@@ -103,6 +103,8 @@ namespace dte3607::physengine::types_ext
       using Vector3H         = types::Vector3H;
       using SpaceObjectFrame = types::ProjectiveSpaceObject;
       using Timepoint        = types::HighResolutionTP;
+      using Mode             = types::RBMode;
+      using State            = types::RBState;
 
 
       // Mechanics property access
@@ -116,12 +118,10 @@ namespace dte3607::physengine::types_ext
 
 
       // Mode
-      enum class Mode { NonFixed, Fixed, Hmm };
       Mode mode() const;
       void setMode(Mode p_mode);
 
       // States
-      enum class State { Free, Resting, Sliding, Rolling };
       State state() const;
       void  setState(State p_state);
 
@@ -215,7 +215,6 @@ namespace dte3607::physengine::types_ext
                              Vector3   translation   = {0, 0, 0},
                              ValueType friction_coef = 1.);
   };
-
 
 
 

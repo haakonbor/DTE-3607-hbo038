@@ -102,8 +102,8 @@ TEST_F(SolverDevLevel2Step1_Fixture002, Test001)
   solver_dev::level2::solve(*m_scenario, 1s);
 
   // Expect to be inbetween the planes
-  for (auto const& s_rid : m_scenario->nonFixedSpheres()) {
-    for (auto const& p_rid : m_scenario->fixedInfPlanes()) {
+  for (auto const& s_rid : m_scenario->nonFixedSphereRBs()) {
+    for (auto const& p_rid : m_scenario->fixedInfPlaneRBs()) {
 
       auto const pn = m_scenario->rbPlaneNormal(p_rid);
       auto const pp = m_scenario->globalFramePosition(p_rid);
@@ -146,7 +146,7 @@ TEST_F(SolverDevLevel2Step2_Fixture001, Test001)
 {
   solver_dev::level2::solve(*m_scenario, 1s);
 
-  for (auto const& s_rid : m_scenario->nonFixedSpheres()) {
+  for (auto const& s_rid : m_scenario->nonFixedSphereRBs()) {
     auto const sp = m_scenario->globalFramePosition(s_rid);
     EXPECT_GT(sp[0], -10);
     EXPECT_LT(sp[0], 10);
@@ -195,8 +195,8 @@ TEST_F(SolverDevLevel2Step2_Fixture002, Test001)
   solver_dev::level2::solve(*m_scenario, 1s);
 
   // Expect to be inbetween the planes
-  for (auto const& s_rid : m_scenario->nonFixedSpheres()) {
-    for (auto const& p_rid : m_scenario->fixedInfPlanes()) {
+  for (auto const& s_rid : m_scenario->nonFixedSphereRBs()) {
+    for (auto const& p_rid : m_scenario->fixedInfPlaneRBs()) {
 
       auto const pn = m_scenario->rbPlaneNormal(p_rid);
       auto const pp = m_scenario->globalFramePosition(p_rid);
@@ -275,8 +275,8 @@ TEST_F(SolverDevLevel2Step2_Fixture003, Test001)
   solver_dev::level2::solve(*m_scenario, 1s);
 
   // Expect to be inbetween the planes
-  for (auto const& s_rid : m_scenario->nonFixedSpheres()) {
-    for (auto const& p_rid : m_scenario->fixedInfPlanes()) {
+  for (auto const& s_rid : m_scenario->nonFixedSphereRBs()) {
+    for (auto const& p_rid : m_scenario->fixedInfPlaneRBs()) {
 
       auto const pn = m_scenario->rbPlaneNormal(p_rid);
       auto const pp = m_scenario->globalFramePosition(p_rid);

@@ -207,13 +207,13 @@ namespace dte3607::physengine::types_ext
 
     /*** Custom API methods ***/
 
-    void createSphere(ValueType radius = 1., Vector3 velocity = {0, 0, 0},
-                      Vector3   translation   = {0, 0, 0},
-                      ValueType friction_coef = 1.);
+    size_t createSphere(ValueType radius = 1., Vector3 velocity = {0, 0, 0},
+                        Vector3   translation   = {0, 0, 0},
+                        ValueType friction_coef = 1.);
 
-    void createFixedInfPlane(Vector3   normal        = {0, 0, 1},
-                             Vector3   translation   = {0, 0, 0},
-                             ValueType friction_coef = 1.);
+    size_t createFixedInfPlane(Vector3   normal        = {0, 0, 1},
+                               Vector3   translation   = {0, 0, 0},
+                               ValueType friction_coef = 1.);
   };
 
 
@@ -382,13 +382,14 @@ namespace dte3607::physengine::types_ext
     m_rigid_bodies[rid]->setVelocity(velocity);
   }
 
-  inline void FixtureOOP::createSphere(ValueType radius, Vector3 velocity,
-                                       Vector3   translation,
-                                       ValueType friction_coef)
+  inline size_t FixtureOOP::createSphere(ValueType radius, Vector3 velocity,
+                                         Vector3   translation,
+                                         ValueType friction_coef)
   {
     // Create Rigid body
     m_rigid_bodies.emplace_back(std::make_unique<RigidBody>());
     auto& rb = m_rigid_bodies.back();
+    auto const rbi = m_rigid_bodies.size() - 1;
     rb->m_object.translateParent(translation);
     rb->setMode(RigidBody::Mode::NonFixed);
     rb->setVelocity(velocity);
@@ -403,15 +404,18 @@ namespace dte3607::physengine::types_ext
     auto& rbp    = rb->m_parts.back();
     rbp->m_shape = sphere;
     rbp->setFrictionCoef(friction_coef);
+
+    return rbi;
   }
 
-  inline void FixtureOOP::createFixedInfPlane(Vector3   normal,
-                                              Vector3   translation,
-                                              ValueType friction_coef)
+  inline size_t FixtureOOP::createFixedInfPlane(Vector3   normal,
+                                                Vector3   translation,
+                                                ValueType friction_coef)
   {
     // Create Rigid body
     m_rigid_bodies.emplace_back(std::make_unique<RigidBody>());
     auto& rb = m_rigid_bodies.back();
+    auto const rbi = m_rigid_bodies.size() - 1;
     rb->m_object.translateParent(translation);
     rb->setMode(RigidBody::Mode::Fixed);
 
@@ -425,6 +429,8 @@ namespace dte3607::physengine::types_ext
     auto& rbp    = rb->m_parts.back();
     rbp->m_shape = plane;
     rbp->setFrictionCoef(friction_coef);
+
+    return rbi;
   }
 
 }   // namespace dte3607::physengine::types_ext

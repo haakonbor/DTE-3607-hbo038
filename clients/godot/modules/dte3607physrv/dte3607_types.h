@@ -245,10 +245,11 @@ namespace frb
     void addAcceleration(size_t rid, Vector3 accel);
 
     // Construction methods
-    void createSphere(ValueType radius = 1., Vector3 velocity = {0, 0, 0},
-                      Vector3   translation   = {0, 0, 0},
-                      ValueType friction_coef = 1.)
+    size_t createSphere(ValueType radius = 1., Vector3 velocity = {0, 0, 0},
+                        Vector3   translation   = {0, 0, 0},
+                        ValueType friction_coef = 1.)
     {
+      return {};
     }
 
     /*** END API requirements ***/

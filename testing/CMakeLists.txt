@@ -14,6 +14,8 @@ if(GTest_FOUND)
     predef_mech_sp_vs_sp_response
     predef_solver_dev_level1
     predef_solver_dev_level2
+    predef_solver_dev_level3
+    predef_solver_dev_level4
     )
 
   # MY unittests

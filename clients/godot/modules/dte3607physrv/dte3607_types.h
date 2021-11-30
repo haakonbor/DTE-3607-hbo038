@@ -230,6 +230,8 @@ namespace frb
     size_t noRigidBodies() const;
     Forces externalForces() const;
 
+    void setGravity(Forces);
+
     // RB properties
     types::Point3  globalFramePosition(size_t rid) const;
     types::Vector3 globalVelocity(size_t rid) const;
@@ -241,6 +243,13 @@ namespace frb
     void translateParent(size_t rid, Vector3 lin_trajectory);
     void setVelocity(size_t rid, Vector3 velocity);
     void addAcceleration(size_t rid, Vector3 accel);
+
+    // Construction methods
+    void createSphere(ValueType radius = 1., Vector3 velocity = {0, 0, 0},
+                      Vector3   translation   = {0, 0, 0},
+                      ValueType friction_coef = 1.)
+    {
+    }
 
     /*** END API requirements ***/
 

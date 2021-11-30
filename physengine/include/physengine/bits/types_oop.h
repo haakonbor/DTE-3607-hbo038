@@ -180,6 +180,8 @@ namespace dte3607::physengine::types_ext
     size_t noRigidBodies() const;
     Forces externalForces() const;
 
+    void setGravity(Forces);
+
     // RB properties
     types::Point3  globalFramePosition(size_t rid) const;
     types::Vector3 globalVelocity(size_t rid) const;
@@ -345,6 +347,8 @@ namespace dte3607::physengine::types_ext
   {
     return m_forces;
   }
+
+  inline void FixtureOOP::setGravity(Forces G) { m_forces = G; }
 
   inline FixtureOOP::Point3 FixtureOOP::globalFramePosition(size_t rid) const
   {

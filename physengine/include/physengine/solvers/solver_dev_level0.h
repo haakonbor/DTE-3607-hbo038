@@ -3,7 +3,7 @@
 
 #include "../utils/type_conversion.h"
 #include "../bits/types.h"
-#include "../api_concepts.h"
+#include "../bits/concepts.h"
 
 namespace dte3607::physengine::solver_dev::level0
 {
@@ -28,7 +28,7 @@ namespace dte3607::physengine::solver_dev::level0
 
   }   // namespace example_impl
 
-  template <api::concepts::SolverFixtureLevel0 Fixture_T>
+  template <concepts::SolverFixtureLevel0 Fixture_T>
   void solve(Fixture_T& scenario, types::NanoSeconds timestep)
   {
 

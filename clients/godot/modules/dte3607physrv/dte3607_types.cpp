@@ -140,6 +140,8 @@ namespace frb
     return m_forces;
   }
 
+  void Fixture::setGravity(Forces G) { m_forces = G; }
+
   types::Point3 Fixture::globalFramePosition(size_t rid) const
   {
     return m_rigid_bodies[rid]->globalFramePosition();

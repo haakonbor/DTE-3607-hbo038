@@ -1,3 +1,4 @@
+#include <physengine/solvers/solver_dev_level0.h>
 #include <physengine/solvers/solver_dev_level1.h>
 #include <physengine/bits/types_oop.h>
 
@@ -22,6 +23,49 @@ using namespace std::chrono_literals;
 ///
 ///
 
+//struct SolverDevStep1_Fixture001 : ::testing::Test {
+
+//  using TestFixture = types_ext::FixtureOOP;
+//  std::unique_ptr<TestFixture> m_fixture;
+
+//  using ::testing::Test::Test;
+
+//  void SetUp() final
+//  {
+//    // Create Fixture
+//    m_fixture          = std::make_unique<TestFixture>();
+
+//    // Set external forces
+////    m_fixture->m_forces = TestFixture::Vector3{0, 0, 0};
+//    m_fixture->setGravity({0, 0, 0});
+
+//    // make plane: normal, translation
+//    m_fixture->createFixedInfPlane({-1, 0, 0}, {10, 0, 0});
+
+//    // make sphere: radius, velocity, translation
+//    m_fixture->createSphere(1.0, {100, 0, 0}, {0, 0, 0});
+//  }
+//  void TearDown() final { m_fixture.release(); }
+//};
+
+
+
+//TEST_F(SolverDevStep1_Fixture001, Test001)
+//{
+//  solver_dev::level1::solve(*m_fixture, 1s);
+
+//  auto no_rbs = m_fixture->noRigidBodies();
+//  for( auto rid = 0; rid < no_rbs; ++rid )
+//  {
+//    // Skip the fixed objects in the fixture scenario
+//    if (m_fixture->mode(rid) == TestFixture::RBMode::Fixed) continue;
+
+//    // Ask for global frame position of object nr. i
+//    auto const pos = m_fixture->globalFramePosition(rid);
+//    EXPECT_LT(pos[0], 10);
+//  }
+//}
+
 struct SolverDevStep1_Fixture001 : ::testing::Test {
 
   using TestFixture = types_ext::FixtureOOP;
@@ -32,35 +76,43 @@ struct SolverDevStep1_Fixture001 : ::testing::Test {
   void SetUp() final
   {
     // Create Fixture
-    m_fixture          = std::make_unique<TestFixture>();
+    m_fixture = std::make_unique<TestFixture>();
 
     // Set external forces
-    m_fixture->m_forces = types::Vector3{0, 0, 0};
-
-    // make plane: normal, translation
-    m_fixture->createFixedInfPlane({-1, 0, 0}, {10, 0, 0});
+    m_fixture->setGravity({0, 0, 0});
 
     // make sphere: radius, velocity, translation
     m_fixture->createSphere(1.0, {100, 0, 0}, {0, 0, 0});
+    m_fixture->createSphere(2.0, {100, 0, 0}, {0, 10, 0});
+    m_fixture->createSphere(3.0, {100, 0, 0}, {0, 0, 10});
   }
   void TearDown() final { m_fixture.release(); }
 };
 
 
+TEST_F(SolverDevStep1_Fixture001, Test001_lvl0)
+{
+  solver_dev::level0::solve(*m_fixture, 1s);
 
-TEST_F(SolverDevStep1_Fixture001, Test001)
+  auto no_rbs = m_fixture->noRigidBodies();
+  for( auto rid = 0; rid < no_rbs; ++rid )
+  {
+    // Ask for global frame position of object nr. i
+    auto const pos = m_fixture->globalFramePosition(rid);
+    EXPECT_NEAR(pos[0], 100, 1e-7);
+  }
+}
+
+TEST_F(SolverDevStep1_Fixture001, Test001_lvl1)
 {
   solver_dev::level1::solve(*m_fixture, 1s);
 
   auto no_rbs = m_fixture->noRigidBodies();
   for( auto rid = 0; rid < no_rbs; ++rid )
   {
-    // Skip the fixed objects in the fixture scenario
-    if (m_fixture->mode(rid) == TestFixture::RBMode::Fixed) continue;
-
     // Ask for global frame position of object nr. i
     auto const pos = m_fixture->globalFramePosition(rid);
-    EXPECT_LT(pos[0], 10);
+    EXPECT_NEAR(pos[0], 100, 1e-7);
   }
 }
 

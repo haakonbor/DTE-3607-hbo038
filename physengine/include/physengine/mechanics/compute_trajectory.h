@@ -3,6 +3,7 @@
 
 
 #include "../bits/types.h"
+#include "../utils/type_conversion.h"
 
 namespace dte3607::physengine::mechanics
 {
@@ -12,10 +13,16 @@ namespace dte3607::physengine::mechanics
     [[maybe_unused]] types::Vector3 const& external_forces,
     [[maybe_unused]] types::Duration       timestep)
   {
-    return {};
+    auto const dt = utils::toDt(timestep);
+
+    auto const a = external_forces * dt;
+
+    auto const ds = (velocity + 0.5 * a) * dt;
+
+    return {ds, a};
   }
 
 
 }   // namespace dte3607::physengine::mechanics
 
-#endif // DTE3607_PHYSENGINE_MECHANICS_COMPUTE_TRAJECTORY_H
+#endif   // DTE3607_PHYSENGINE_MECHANICS_COMPUTE_TRAJECTORY_H

@@ -8,8 +8,8 @@ namespace dte3607::physengine::solver_types
   using Vector3 = types::Vector3;
 
   struct Params {
-    Vector3 F;    // External forces(environment)
-    double  dt;   // Time step (system)
+    Vector3         F;          // External forces(environment)
+    types::Duration timestep;   // Time step (system)
   };
 
   struct CacheProcDataBlock {
@@ -25,6 +25,28 @@ namespace dte3607::physengine::solver_types
     Vector3 in_ds;   // Trajectory
 
     Vector3 out_p;   // New Position
+  };
+
+  struct SphereGeomDataBlock {
+    Vector3 p;    // Position
+    double  r;    // Radius
+    Vector3 ds;   // Trajectory
+  };
+
+  struct InfPlaneGeomDataBlock {
+    Vector3 p;   // Position
+    double  n;   // Normal
+  };
+
+  struct IntsecStatusDataBlock {
+    bool   is_collision;   // Has there been a collision
+    double col_tp;         // Time point in frame (t_0, t_0 + delta_t]
+  };
+
+  struct IntersectDetProcDataBlock {
+    SphereGeomDataBlock   sphere;   // Sphere data
+    InfPlaneGeomDataBlock plane;    // Infinite plane data
+    IntsecStatusDataBlock status;   // Intersection status data
   };
 }   // namespace dte3607::physengine::solver_types
 

@@ -2,6 +2,7 @@
 #define DTE3607_PHYSENGINE_MECHANICS_SPHERE_VS_FIXED_PLANE_DETECTION_H
 
 #include "../bits/types.h"
+#include "../utils/type_conversion.h"
 
 // stl
 #include <optional>
@@ -20,7 +21,18 @@ namespace dte3607::physengine::mechanics
     [[maybe_unused]] types::HighResolutionTP const& t_0,
     [[maybe_unused]] types::Duration                timestep)
   {
-    return {};
+    auto const d  = (fplane_q + sphere_r * fplane_n) - sphere_p;
+    auto const dt = utils::toDt(timestep);
+    auto const ds = sphere_v * dt + 0.5 * external_forces * std::pow(dt, 2.0);
+    auto const x  = blaze::inner(d, fplane_n) / blaze::inner(ds, fplane_n);
+    auto const time_of_impact = x * dt;
+
+    if (blaze::inner(d, fplane_n) < std::numeric_limits<double>::epsilon()) {
+      return time_of_impact;
+    }
+    else {
+      return false;
+    }
   }
 
 }   // namespace dte3607::physengine::mechanics

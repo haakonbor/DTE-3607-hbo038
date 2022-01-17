@@ -4,6 +4,8 @@
 #include "../utils/type_conversion.h"
 #include "../bits/types.h"
 #include "../bits/concepts.h"
+#include "../mechanics/compute_trajectory.h"
+#include "../bits/solver_types.h"
 
 
 namespace dte3607::physengine::solver_dev::level1
@@ -12,10 +14,13 @@ namespace dte3607::physengine::solver_dev::level1
   void computeCache(Data_T& data, Params_T const& params)
   {
     auto const proc_kernel = [&params](auto& data) {
-      auto const& [F, dt]             = params;
+      auto const& [F, timestep]       = params;
       auto& [pos, vel, out_a, out_ds] = data;
-      out_a                           = F * dt;
-      out_ds                          = vel * dt + 0.5 * F * std::pow(dt, 2.0);
+
+      auto [ds, a] = mechanics::computeLinearTrajectory(vel, F, timestep);
+
+      out_ds = ds;
+      out_a  = a;
 
       // Move to different process
       pos += out_ds;
@@ -27,9 +32,9 @@ namespace dte3607::physengine::solver_dev::level1
   template <concepts::SolverFixture Fixture_T>
   void solve(Fixture_T& scenario, types::NanoSeconds timestep)
   {
-    std::tuple<typename Fixture_T::Vector3, types::ValueType> params;
-    std::get<0>(params) = scenario.m_forces;
-    std::get<1>(params) = utils::toDt(timestep);
+    solver_types::Params params;
+    params.F        = scenario.m_forces;
+    params.timestep = timestep;
     computeCache(scenario.m_backend->m_cache_data, params);
 
     for (auto const& id : scenario.m_backend->m_rb_cache) {

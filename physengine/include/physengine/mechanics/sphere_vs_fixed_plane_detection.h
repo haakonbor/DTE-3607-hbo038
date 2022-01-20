@@ -3,11 +3,10 @@
 
 #include "../bits/types.h"
 #include "../utils/type_conversion.h"
-#include "../mechanics/compute_trajectory.h"
+#include "compute_trajectory.h"
 
 // stl
 #include <optional>
-#include <chrono>
 
 namespace dte3607::physengine::mechanics
 {
@@ -26,33 +25,29 @@ namespace dte3607::physengine::mechanics
     auto const d = (fplane_q + sphere_r * fplane_n) - sphere_p;
     auto const ds
       = computeLinearTrajectory(sphere_v, external_forces, timestep).first;
+    auto const inner_d_n  = blaze::inner(d, fplane_n);
+    auto const inner_ds_n = blaze::inner(ds, fplane_n);
 
-    auto const innerproduct_ds_n = blaze::inner(ds, fplane_n);
+    // Scalar of trajectory for the point of collision
+    auto const x = (inner_ds_n != 0) ? inner_d_n / inner_ds_n : NULL;
 
-    // Sphere is moving parallel to wall
-    if (innerproduct_ds_n == 0) {
+    // Sphere is moving parallel to wall (no collision)
+    if (x == NULL) {
       return std::nullopt;
     }
 
-    // Scalar of trajectory where collision happens
-    auto const x = blaze::inner(d, fplane_n) / innerproduct_ds_n;
-
-    // Collision is backwards along trajectory, or after trajectory ends
-    if (x <= 0 || x > 1) {
+    // Collision is backwards in time, or after current timestep
+    else if (x <= 0 || x > 1) {
       return std::nullopt;
     }
 
-    auto const time_of_impact = t_0 + x * timestep;
-
-    // Collision is backwards in time, or before a previous handled collision,
-    // or after the timestep
-    if (time_of_impact > t_0 && time_of_impact > sphere_tc
-        && time_of_impact < t_0 + timestep) {
-      return x;
-    }
-    else {
+    // Collision is before or at the same time as previous collision
+    else if (t_0 + x * timestep <= sphere_tc) {
       return std::nullopt;
     }
+
+    // Collision is valid :)
+    return x;
   }
 
 }   // namespace dte3607::physengine::mechanics

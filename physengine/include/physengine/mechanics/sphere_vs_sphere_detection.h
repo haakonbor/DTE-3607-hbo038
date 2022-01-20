@@ -23,7 +23,41 @@ namespace dte3607::physengine::mechanics
     [[maybe_unused]] types::HighResolutionTP const& t_0,
     [[maybe_unused]] types::Duration                timestep)
   {
-    return {};
+    auto const r = s1_r + s2_r;
+    auto const ds1
+      = computeLinearTrajectory(s1_v, external_forces, timestep).first;
+    auto const ds2
+      = computeLinearTrajectory(s2_v, external_forces, timestep).first;
+    auto const Q         = s2_p - s1_p;
+    auto const R         = (ds2 - ds1);
+    auto const inner_Q_R = blaze::inner(Q, R);
+    auto const inner_R_R = blaze::inner(R, R);
+    auto const inner_Q_Q = blaze::inner(Q, Q);
+    auto const potential_sqrt
+      = std::pow(inner_Q_R, 2.0) - inner_R_R * (inner_Q_Q - std::pow(r, 2.0));
+
+    auto const x = (potential_sqrt >= 0 && inner_R_R != 0)
+                     ? (-inner_Q_R - std::sqrt(potential_sqrt)) / inner_R_R
+                     : NULL;
+
+    // Spheres are moving in parallel or opposite directions which are
+    // orthogonal to each other
+    if (x == NULL) {
+      return std::nullopt;
+    }
+
+    // Collision is backwards in time, or outside of current timestep
+    else if (x <= 0 || x > 1) {
+      return std::nullopt;
+    }
+
+    // Collision is before or at the same time as one of the previous collisions
+    else if (t_0 + x * timestep <= s1_tc || t_0 + x * timestep <= s2_tc) {
+      return std::nullopt;
+    }
+
+    // Collision is valid :)
+    return x;
   }
 
 

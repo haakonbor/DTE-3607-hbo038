@@ -21,8 +21,7 @@ using namespace dte3607::physengine;
 
 
 
-struct Mechanics_Sphere_vs_Sphere_CollisionDetection
-    : ::testing::Test {
+struct Mechanics_Sphere_vs_Sphere_CollisionDetection : ::testing::Test {
 
   using ::testing::Test::Test;
   ~Mechanics_Sphere_vs_Sphere_CollisionDetection() override {}
@@ -32,15 +31,15 @@ struct Mechanics_Sphere_vs_Sphere_CollisionDetection
 
   // The sphere
   types::HighResolutionTP m_sphere_tc;
-  types::Point3    m_sphere_p;
-  types::ValueType m_sphere_r;
-  types::Vector3   m_sphere_v;
+  types::Point3           m_sphere_p;
+  types::ValueType        m_sphere_r;
+  types::Vector3          m_sphere_v;
 
   // The sphere
   types::HighResolutionTP m_other_tc;
-  types::Point3    m_other_p;
-  types::ValueType m_other_r;
-  types::Vector3   m_other_v;
+  types::Point3           m_other_p;
+  types::ValueType        m_other_r;
+  types::Vector3          m_other_v;
 
   // No gravity
   types::Vector3 m_external_forces;
@@ -51,7 +50,7 @@ struct Mechanics_Sphere_vs_Sphere_CollisionDetection
 
 
 struct Mechanics_Sp_vs_Sp_CD_Basic_SphereAtT0
-    : Mechanics_Sphere_vs_Sphere_CollisionDetection {
+  : Mechanics_Sphere_vs_Sphere_CollisionDetection {
 
   void SetUp() final
   {
@@ -72,7 +71,6 @@ struct Mechanics_Sp_vs_Sp_CD_Basic_SphereAtT0
     // No gravity
     m_external_forces = types::Vector3{0, 0, 0};
   }
-
 };
 
 
@@ -132,10 +130,8 @@ TEST_F(Mechanics_Sp_vs_Sp_CD_Basic_SphereAtT0, DT1s)
 
 
 
-
-
 struct Mechanics_Sp_vs_Sp_CD_Basic_SphereAtT0P200ms
-    : Mechanics_Sphere_vs_Sphere_CollisionDetection {
+  : Mechanics_Sphere_vs_Sphere_CollisionDetection {
 
   void SetUp() final
   {
@@ -156,7 +152,6 @@ struct Mechanics_Sp_vs_Sp_CD_Basic_SphereAtT0P200ms
     // No gravity
     m_external_forces = types::Vector3{0, 0, 0};
   }
-
 };
 
 
@@ -215,10 +210,8 @@ TEST_F(Mechanics_Sp_vs_Sp_CD_Basic_SphereAtT0P200ms, DT1s)
 
 
 
-
-
 struct Mechanics_Sp_vs_Sp_CD_Basic_SphereAtT0P1s
-    : Mechanics_Sphere_vs_Sphere_CollisionDetection {
+  : Mechanics_Sphere_vs_Sphere_CollisionDetection {
 
   void SetUp() final
   {
@@ -239,7 +232,6 @@ struct Mechanics_Sp_vs_Sp_CD_Basic_SphereAtT0P1s
     // No gravity
     m_external_forces = types::Vector3{0, 0, 0};
   }
-
 };
 
 

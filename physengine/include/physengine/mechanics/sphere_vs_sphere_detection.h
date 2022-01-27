@@ -10,7 +10,7 @@
 namespace dte3607::physengine::mechanics
 {
 
-  inline std::optional<types::ValueType> detectCollisionSphereSphere(
+  inline std::optional<types::HighResolutionTP> detectCollisionSphereSphere(
     [[maybe_unused]] types::HighResolutionTP const& s1_tc,
     [[maybe_unused]] types::Point3 const&           s1_p,
     [[maybe_unused]] types::ValueType               s1_r,
@@ -35,6 +35,8 @@ namespace dte3607::physengine::mechanics
     auto const inner_Q_Q = blaze::inner(Q, Q);
     auto const potential_sqrt
       = std::pow(inner_Q_R, 2.0) - inner_R_R * (inner_Q_Q - std::pow(r, 2.0));
+    auto const tc_max = std::max(s1_tc, s2_tc);
+    auto const dt     = utils::toDt(timestep);
 
     auto const x = (potential_sqrt >= 0 && inner_R_R != 0)
                      ? (-inner_Q_R - std::sqrt(potential_sqrt)) / inner_R_R
@@ -46,18 +48,14 @@ namespace dte3607::physengine::mechanics
       return std::nullopt;
     }
 
-    // Collision is backwards in time, or outside of current timestep
-    else if (x <= 0 || x > 1) {
-      return std::nullopt;
-    }
-
-    // Collision is before or at the same time as one of the previous collisions
-    else if (t_0 + x * timestep <= s1_tc || t_0 + x * timestep <= s2_tc) {
+    // Collision is before one of the spheres current time, or after the
+    // remaining time of the timestep
+    else if (x <= 0 || x > 1 - (utils::toDt(tc_max - t_0) / dt)) {
       return std::nullopt;
     }
 
     // Collision is valid :)
-    return x;
+    return tc_max + utils::toDuration(types::SecondsD(x * dt));
   }
 
 

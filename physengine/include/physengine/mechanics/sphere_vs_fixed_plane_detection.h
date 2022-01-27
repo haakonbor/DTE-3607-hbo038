@@ -11,7 +11,7 @@
 namespace dte3607::physengine::mechanics
 {
 
-  inline std::optional<types::ValueType> detectCollisionSphereFixedPlane(
+  inline std::optional<types::HighResolutionTP> detectCollisionSphereFixedPlane(
     [[maybe_unused]] types::HighResolutionTP const& sphere_tc,
     [[maybe_unused]] types::Point3 const&           sphere_p,
     [[maybe_unused]] types::ValueType               sphere_r,
@@ -27,6 +27,7 @@ namespace dte3607::physengine::mechanics
       = computeLinearTrajectory(sphere_v, external_forces, timestep).first;
     auto const inner_d_n  = blaze::inner(d, fplane_n);
     auto const inner_ds_n = blaze::inner(ds, fplane_n);
+    auto const dt         = utils::toDt(timestep);
 
     // Scalar of trajectory for the point of collision
     auto const x = (inner_ds_n != 0) ? inner_d_n / inner_ds_n : NULL;
@@ -36,18 +37,14 @@ namespace dte3607::physengine::mechanics
       return std::nullopt;
     }
 
-    // Collision is backwards in time, or after current timestep
-    else if (x <= 0 || x > 1) {
-      return std::nullopt;
-    }
-
-    // Collision is before or at the same time as previous collision
-    else if (t_0 + x * timestep <= sphere_tc) {
+    // Collision is before start time, or after the remaining time of the
+    // timestep
+    else if (x <= 0 || x > 1 - (utils::toDt(sphere_tc - t_0) / dt)) {
       return std::nullopt;
     }
 
     // Collision is valid :)
-    return x;
+    return sphere_tc + utils::toDuration(types::SecondsD(x * dt));
   }
 
 }   // namespace dte3607::physengine::mechanics

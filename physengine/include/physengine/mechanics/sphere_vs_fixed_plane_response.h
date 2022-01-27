@@ -14,7 +14,7 @@ namespace dte3607::physengine::mechanics
     [[maybe_unused]] types::Vector3 const& sphere_v,
     [[maybe_unused]] types::Vector3 const& fplane_n)
   {
-    return {};
+    return sphere_v - 2 * blaze::inner(sphere_v, fplane_n) * fplane_n;
   }
 
 

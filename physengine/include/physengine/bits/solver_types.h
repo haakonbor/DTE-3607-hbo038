@@ -31,9 +31,11 @@ namespace dte3607::physengine::solver_types
   };
 
   struct SphereGeomDataBlock {
-    Vector3                 p;     // Position
-    double                  r;     // Radius
-    Vector3                 v;     // Velocity
+    Vector3                 p;   // Position
+    double                  r;   // Radius
+    Vector3                 v;   // Velocity
+    Vector3                 ds;
+    Vector3                 a;
     types::HighResolutionTP t_c;   // Current timepoint
   };
 
@@ -42,16 +44,11 @@ namespace dte3607::physengine::solver_types
     Vector3 n;   // Normal
   };
 
-  struct IntsecStatusDataBlock {
-    bool is_collision;   // Has there been a collision
+  struct IntersectDetProcDataBlock {
+    SphereGeomDataBlock&   sphere;   // Sphere data
+    InfPlaneGeomDataBlock& plane;    // Infinite plane data
     types::HighResolutionTP
       col_tp;   // Time point in frame (t_0, t_0 + delta_t]
-  };
-
-  struct IntersectDetProcDataBlock {
-    SphereGeomDataBlock   sphere;   // Sphere data
-    InfPlaneGeomDataBlock plane;    // Infinite plane data
-    IntsecStatusDataBlock status;   // Intersection status data
   };
 }   // namespace dte3607::physengine::solver_types
 

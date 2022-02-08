@@ -43,8 +43,7 @@ namespace dte3607::physengine::backend
                                  Vector3{0, 0, 0});
     // Sphere geometry data
     bf.m_sphere_data.emplace_back(position, radius, velocity, Vector3{0, 0, 0},
-                                  Vector3{0, 0, 0},
-                                  types::HighResolutionClock::now());
+                                  Vector3{0, 0, 0}, types::HighResolutionTP{});
     // ID
     bf.m_id_to_sphere.emplace(rbi, bf.m_sphere_data.size() - 1);
     bf.m_id_to_cache.emplace(rbi, bf.m_cache_data.size() - 1);

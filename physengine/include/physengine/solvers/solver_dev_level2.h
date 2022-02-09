@@ -30,8 +30,8 @@ namespace dte3607::physengine::solver_dev::level2
 
   template <typename Intersect_T, typename Plane_T, typename Sphere_T,
             typename Params_T>
-  void detectCollisions(Intersect_T& data, Sphere_T& spheres, Plane_T& planes,
-                        Params_T& params, uint8_t prime)
+  void detectCollisions(Intersect_T& intersections, Sphere_T& spheres,
+                        Plane_T& planes, Params_T& params, uint8_t prime)
   {
     for (auto i = 0; i < spheres.size(); i++) {
       for (auto j = 0; j < planes.size(); j++) {
@@ -42,7 +42,7 @@ namespace dte3607::physengine::solver_dev::level2
           params.timestep - prime * (spheres[i].t_c - params.t_0));
 
         if (x.has_value()) {
-          data.emplace_back(spheres[i], planes[j], x.value());
+          intersections.emplace_back(spheres[i], planes[j], x.value());
         }
       }
     }
@@ -58,15 +58,27 @@ namespace dte3607::physengine::solver_dev::level2
 
   template <typename Intersect_T>
   std::set<solver_types::IntersectDetProcDataBlock, compare_col_time>
-  sortAndReduce(Intersect_T& intersection_data)
+  sortAndReduce(Intersect_T& intersections)
   {
-    std::set<solver_types::IntersectDetProcDataBlock, compare_col_time> sorted;
+    /*
+     *  !!!
+     *  THIS MAKES THE SET SORTED BY TIME, BUT INTERPRETS COLLISIONS WITH SAME
+     *  TIME AS COPIES EVEN IF COLLISION TAKES PLACE SOMEWHERE ELSE
+     *  !!!
+     */
 
-    for (auto intersect : intersection_data) {
-      sorted.insert(intersect);
+    // Need to implement this instead of set:
+    // std::sort(intersections.begin(), intersections.end(),
+    // compare_col_time());
+
+    std::set<solver_types::IntersectDetProcDataBlock, compare_col_time>
+      sorted_intersections;
+
+    for (auto intersection : intersections) {
+      sorted_intersections.insert(intersection);
     }
 
-    return sorted;
+    return sorted_intersections;
   }
 
   template <typename Data_T, typename Params_T>
@@ -93,6 +105,18 @@ namespace dte3607::physengine::solver_dev::level2
     collision.sphere.t_c = collision.col_tp;
   }
 
+  template <typename Sphere_T, typename Params_T>
+  void initTimepoints(Sphere_T& spheres, Params_T& params)
+  {
+    auto now = types::HighResolutionClock::now();
+
+    params.t_0 = now;
+
+    for (auto& sphere : spheres) {
+      sphere.t_c = now;
+    }
+  }
+
   template <concepts::SolverFixtureLevel2 Fixture_T>
   void solve([[maybe_unused]] Fixture_T&         scenario,
              [[maybe_unused]] types::NanoSeconds timestep)
@@ -101,11 +125,7 @@ namespace dte3607::physengine::solver_dev::level2
     params.F        = scenario.m_forces;
     params.timestep = timestep;
 
-    auto now   = types::HighResolutionClock::now();
-    params.t_0 = now;
-    for (auto& sphere : scenario.m_backend.m_sphere_data) {
-      sphere.t_c = now;
-    }
+    initTimepoints(scenario.m_backend.m_sphere_data, params);
 
     detectCollisions(scenario.m_backend.m_intersection_data,
                      scenario.m_backend.m_sphere_data,

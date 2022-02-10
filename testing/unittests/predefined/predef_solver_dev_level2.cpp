@@ -263,7 +263,7 @@ struct SolverDevLevel2Step2_Fixture003 : ::testing::Test {
     }
 
     for (auto const& sd : sphere_data)
-      m_scenario->createSphere(1.0, std::get<0>(sd), std::get<1>(sd));
+      m_scenario->createSphere(0.2, std::get<0>(sd), std::get<1>(sd));
   }
   void TearDown() final { m_scenario.release(); }
 };
@@ -289,6 +289,58 @@ TEST_F(SolverDevLevel2Step2_Fixture003, Test001)
 }
 
 
+struct SolverDevLevel2Step2_Fixture004 : ::testing::Test {
+
+  using TestFixture = fixtures::FixtureLevel2;
+  std::unique_ptr<TestFixture> m_scenario;
+
+  using ::testing::Test::Test;
+
+  void SetUp() final
+  {
+    // Create Fixture
+    m_scenario = std::make_unique<TestFixture>();
+
+
+    // Set external forces
+    m_scenario->setGravity({0, 0, 0});
+
+
+    // make plane
+    m_scenario->createFixedInfPlane({-1, 0, 0}, {10, 0, 0});
+
+    m_scenario->createFixedInfPlane({1, 0, 0}, {-10, 0, 0});
+
+    m_scenario->createFixedInfPlane({0, 0, -1}, {0, 0, 10});
+
+    m_scenario->createFixedInfPlane({0, 0, 1}, {0, 0, -10});
+
+
+    // make sphere
+    m_scenario->createSphere(1.0, {100, 0, 100}, {0, 0, 0});
+    m_scenario->createSphere(1.0, {-100, 0, -100}, {0, 0, 0});
+  }
+  void TearDown() final { m_scenario.release(); }
+};
+
+TEST_F(SolverDevLevel2Step2_Fixture004, Test001)
+{
+  solver_dev::level2::solve(*m_scenario, 1s);
+
+  // Expect to be inbetween the planes
+  for (auto const& s_rid : m_scenario->nonFixedSphereRBs()) {
+    for (auto const& p_rid : m_scenario->fixedInfPlaneRBs()) {
+
+      auto const  pn  = m_scenario->rbPlaneNormal(p_rid);
+      auto const  pp  = m_scenario->globalFramePosition(p_rid);
+      auto const  sp  = m_scenario->globalFramePosition(s_rid);
+      auto const  sr  = m_scenario->rbSphereRadius(s_rid);
+      auto const& d   = sp - pp;
+      auto const  pnd = blaze::inner(pn, d) - sr;
+      EXPECT_GT(pnd, 0);
+    }
+  }
+}
 
 // struct SolverDevLevel2Step3_TestFixture : ::testing::Test {
 

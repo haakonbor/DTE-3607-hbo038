@@ -7,6 +7,8 @@
 #include "../mechanics/compute_trajectory.h"
 #include "../mechanics/sphere_vs_fixed_plane_detection.h"
 #include "../mechanics/sphere_vs_fixed_plane_response.h"
+#include "../mechanics/sphere_vs_sphere_detection.h"
+#include "../mechanics/sphere_vs_sphere_response.h"
 #include "../bits/solver_types.h"
 
 #include <set>
@@ -42,7 +44,24 @@ namespace dte3607::physengine::solver_dev::level2
           params.timestep - prime * (spheres[i].t_c - params.t_0));
 
         if (x.has_value()) {
-          intersections.emplace_back(spheres[i], planes[j], x.value());
+          intersections.emplace_back(spheres[i], spheres[0], planes[j],
+                                     x.value(), true);
+        }
+      }
+
+      for (auto j = 0; j < spheres.size(); j++) {
+        if (j == i) {
+          continue;
+        }
+
+        auto x = mechanics::detectCollisionSphereSphere(
+          spheres[i].t_c, spheres[i].p, spheres[i].r, spheres[i].v,
+          spheres[j].t_c, spheres[j].p, spheres[j].r, spheres[j].v, params.F,
+          params.t_0, params.timestep);
+
+        if (x.has_value()) {
+          intersections.emplace_back(spheres[i], spheres[j], planes[0],
+                                     x.value(), false);
         }
       }
     }
@@ -73,14 +92,26 @@ namespace dte3607::physengine::solver_dev::level2
   template <typename Data_T, typename Params_T>
   void simulateObject(Data_T& collision, Params_T const& params)
   {
-    auto [ds, a] = mechanics::computeLinearTrajectory(
-      collision.sphere.v, params.F, collision.col_tp - collision.sphere.t_c);
+    auto [ds1, a1] = mechanics::computeLinearTrajectory(
+      collision.sphere1.v, params.F, collision.col_tp - collision.sphere1.t_c);
 
-    collision.sphere.ds += ds;
-    collision.sphere.a += a;
+    collision.sphere1.ds += ds1;
+    collision.sphere1.a += a1;
 
-    collision.sphere.p += ds;
-    collision.sphere.v += a;
+    collision.sphere1.p += ds1;
+    collision.sphere1.v += a1;
+
+    if (!collision.fixed) {
+      auto [ds2, a2] = mechanics::computeLinearTrajectory(
+        collision.sphere2.v, params.F,
+        collision.col_tp - collision.sphere2.t_c);
+
+      collision.sphere2.ds += ds2;
+      collision.sphere2.a += a2;
+
+      collision.sphere2.p += ds2;
+      collision.sphere2.v += a2;
+    }
   }
 
   template <typename SortedIntersect_T, typename Params_T>
@@ -96,11 +127,23 @@ namespace dte3607::physengine::solver_dev::level2
 
       simulateObject(collision, params);
 
-      auto new_v = mechanics::computeImpactResponseSphereFixedPlane(
-        collision.sphere.v, collision.plane.n);
+      if (collision.fixed) {
+        auto new_v = mechanics::computeImpactResponseSphereFixedPlane(
+          collision.sphere1.v, collision.plane.n);
 
-      collision.sphere.v   = new_v;
-      collision.sphere.t_c = collision.col_tp;
+        collision.sphere1.v   = new_v;
+        collision.sphere1.t_c = collision.col_tp;
+      }
+      else {
+        auto new_vs = mechanics::computeImpactResponseSphereSphere(
+          collision.sphere1.p, collision.sphere1.v, 1.0, collision.sphere2.p,
+          collision.sphere2.v, 1.0);
+
+        collision.sphere1.v   = new_vs.first;
+        collision.sphere1.t_c = collision.col_tp;
+        collision.sphere2.v   = new_vs.second;
+        collision.sphere2.t_c = collision.col_tp;
+      }
     }
   }
 

@@ -45,10 +45,12 @@ namespace dte3607::physengine::solver_types
   };
 
   struct IntersectDetProcDataBlock {
-    SphereGeomDataBlock&   sphere;   // Sphere data
-    InfPlaneGeomDataBlock& plane;    // Infinite plane data
+    SphereGeomDataBlock&   sphere1;   // Sphere data
+    SphereGeomDataBlock&   sphere2;
+    InfPlaneGeomDataBlock& plane;   // Infinite plane data
     types::HighResolutionTP
-      col_tp;   // Time point in frame (t_0, t_0 + delta_t]
+         col_tp;   // Time point in frame (t_0, t_0 + delta_t]
+    bool fixed;    // Type of collision
   };
 }   // namespace dte3607::physengine::solver_types
 

@@ -13,7 +13,6 @@
 
 namespace dte3607::physengine::solver_dev::level2
 {
-
   template <typename Sphere_T, typename Params_T>
   void simulateAll(Sphere_T& data, Params_T const& params)
   {
@@ -21,10 +20,11 @@ namespace dte3607::physengine::solver_dev::level2
       auto [ds, a] = mechanics::computeLinearTrajectory(
         sphere.v, params.F, params.timestep - (sphere.t_c - params.t_0));
 
+      sphere.ds += ds;
+      sphere.a += a;
+
       sphere.p += ds;
       sphere.v += a;
-      sphere.ds = ds;
-      sphere.a  = a;
     }
   }
 
@@ -57,21 +57,10 @@ namespace dte3607::physengine::solver_dev::level2
   };
 
   template <typename Intersect_T>
-  std::set<solver_types::IntersectDetProcDataBlock, compare_col_time>
+  std::multiset<solver_types::IntersectDetProcDataBlock, compare_col_time>
   sortAndReduce(Intersect_T& intersections)
   {
-    /*
-     *  !!!
-     *  THIS MAKES THE SET SORTED BY TIME, BUT INTERPRETS COLLISIONS WITH SAME
-     *  TIME AS COPIES EVEN IF COLLISION TAKES PLACE SOMEWHERE ELSE
-     *  !!!
-     */
-
-    // Need to implement this instead of set:
-    // std::sort(intersections.begin(), intersections.end(),
-    // compare_col_time());
-
-    std::set<solver_types::IntersectDetProcDataBlock, compare_col_time>
+    std::multiset<solver_types::IntersectDetProcDataBlock, compare_col_time>
       sorted_intersections;
 
     for (auto intersection : intersections) {
@@ -87,22 +76,32 @@ namespace dte3607::physengine::solver_dev::level2
     auto [ds, a] = mechanics::computeLinearTrajectory(
       collision.sphere.v, params.F, collision.col_tp - collision.sphere.t_c);
 
+    collision.sphere.ds += ds;
+    collision.sphere.a += a;
+
     collision.sphere.p += ds;
     collision.sphere.v += a;
   }
 
-  template <typename Intersect_T, typename Params_T>
-  void handleFirstCollision(Intersect_T& sorted, Params_T const& params)
+  template <typename SortedIntersect_T, typename Params_T>
+  void handleFirstCollision(SortedIntersect_T& sorted_intersections,
+                            Params_T const&    params)
   {
-    auto collision = *sorted.begin();
+    auto first_col_tp = (*sorted_intersections.begin()).col_tp;
 
-    simulateObject(collision, params);
+    for (auto& collision : sorted_intersections) {
+      if (collision.col_tp != first_col_tp) {
+        break;
+      }
 
-    auto new_v = mechanics::computeImpactResponseSphereFixedPlane(
-      collision.sphere.v, collision.plane.n);
+      simulateObject(collision, params);
 
-    collision.sphere.v   = new_v;
-    collision.sphere.t_c = collision.col_tp;
+      auto new_v = mechanics::computeImpactResponseSphereFixedPlane(
+        collision.sphere.v, collision.plane.n);
+
+      collision.sphere.v   = new_v;
+      collision.sphere.t_c = collision.col_tp;
+    }
   }
 
   template <typename Sphere_T, typename Params_T>

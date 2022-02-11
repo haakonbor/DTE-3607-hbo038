@@ -83,7 +83,21 @@ namespace dte3607::physengine::solver_dev::level2
       sorted_intersections;
 
     for (auto intersection : intersections) {
-      sorted_intersections.insert(intersection);
+      bool is_copy = false;
+
+      for (auto it = sorted_intersections.begin();
+           it != sorted_intersections.end(); it++) {
+        if (intersection.fixed == false
+            && (*it).sphere2.p == intersection.sphere1.p
+            && (*it).sphere1.p == intersection.sphere2.p
+            && (*it).col_tp == intersection.col_tp) {
+          is_copy = true;
+        }
+      }
+
+      if (!is_copy) {
+        sorted_intersections.insert(intersection);
+      }
     }
 
     return sorted_intersections;

@@ -289,7 +289,7 @@ TEST_F(SolverDevLevel2Step2_Fixture003, Test001)
 }
 
 
-struct SolverDevLevel2Step2_Fixture004 : ::testing::Test {
+struct SolverDevLevel2Step3_Fixture001 : ::testing::Test {
 
   using TestFixture = fixtures::FixtureLevel2;
   std::unique_ptr<TestFixture> m_scenario;
@@ -323,7 +323,7 @@ struct SolverDevLevel2Step2_Fixture004 : ::testing::Test {
   void TearDown() final { m_scenario.release(); }
 };
 
-TEST_F(SolverDevLevel2Step2_Fixture004, Test001)
+TEST_F(SolverDevLevel2Step3_Fixture001, Test001)
 {
   solver_dev::level2::solve(*m_scenario, 1s);
 

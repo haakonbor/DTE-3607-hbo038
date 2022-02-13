@@ -263,7 +263,7 @@ struct SolverDevLevel2Step2_Fixture003 : ::testing::Test {
     }
 
     for (auto const& sd : sphere_data)
-      m_scenario->createSphere(0.2, std::get<0>(sd), std::get<1>(sd));
+      m_scenario->createSphere(1.0, std::get<0>(sd), std::get<1>(sd));
   }
   void TearDown() final { m_scenario.release(); }
 };

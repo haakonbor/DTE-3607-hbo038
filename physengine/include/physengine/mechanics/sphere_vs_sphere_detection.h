@@ -14,22 +14,22 @@ namespace dte3607::physengine::mechanics
     [[maybe_unused]] types::HighResolutionTP const& s1_tc,
     [[maybe_unused]] types::Point3 const&           s1_p,
     [[maybe_unused]] types::ValueType               s1_r,
-    [[maybe_unused]] types::Vector3 const&          s1_v,
+    [[maybe_unused]] types::Vector3 const&          s1_ds,
     [[maybe_unused]] types::HighResolutionTP const& s2_tc,
     [[maybe_unused]] types::Point3 const&           s2_p,
     [[maybe_unused]] types::ValueType               s2_r,
-    [[maybe_unused]] types::Vector3 const&          s2_v,
-    [[maybe_unused]] types::Vector3 const&          external_forces,
+    [[maybe_unused]] types::Vector3 const&          s2_ds,
+    //[[maybe_unused]] types::Vector3 const&          external_forces,
     [[maybe_unused]] types::HighResolutionTP const& t_0,
     [[maybe_unused]] types::Duration                timestep)
   {
     auto const r = s1_r + s2_r;
-    auto const ds1
-      = computeLinearTrajectory(s1_v, external_forces, timestep).first;
-    auto const ds2
-      = computeLinearTrajectory(s2_v, external_forces, timestep).first;
+    //    auto const ds1
+    //      = computeLinearTrajectory(s1_v, external_forces, timestep).first;
+    //    auto const ds2
+    //      = computeLinearTrajectory(s2_v, external_forces, timestep).first;
     auto const Q         = s2_p - s1_p;
-    auto const R         = (ds2 - ds1);
+    auto const R         = (s2_ds - s1_ds);
     auto const inner_Q_R = blaze::inner(Q, R);
     auto const inner_R_R = blaze::inner(R, R);
     auto const inner_Q_Q = blaze::inner(Q, Q);

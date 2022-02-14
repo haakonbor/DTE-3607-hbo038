@@ -33,6 +33,7 @@ namespace dte3607::physengine::solver_types
     double                  r;   // Radius
     Vector3                 v;   // Velocity
     Vector3                 ds;
+    Vector3                 current_ds;
     Vector3                 a;
     types::HighResolutionTP t_c;   // Current timepoint
   };

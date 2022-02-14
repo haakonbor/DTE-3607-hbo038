@@ -15,18 +15,18 @@ namespace dte3607::physengine::mechanics
     [[maybe_unused]] types::HighResolutionTP const& sphere_tc,
     [[maybe_unused]] types::Point3 const&           sphere_p,
     [[maybe_unused]] types::ValueType               sphere_r,
-    [[maybe_unused]] types::Vector3 const&          sphere_v,
+    [[maybe_unused]] types::Vector3 const&          sphere_ds,
     [[maybe_unused]] types::Point3 const&           fplane_q,
     [[maybe_unused]] types::Vector3 const&          fplane_n,
-    [[maybe_unused]] types::Vector3 const&          external_forces,
+    //[[maybe_unused]] types::Vector3 const&          external_forces,
     [[maybe_unused]] types::HighResolutionTP const& t_0,
     [[maybe_unused]] types::Duration                timestep)
   {
     auto const d = (fplane_q + sphere_r * fplane_n) - sphere_p;
-    auto const ds
-      = computeLinearTrajectory(sphere_v, external_forces, timestep).first;
+    // auto const ds
+    //  = computeLinearTrajectory(sphere_v, external_forces, timestep).first;
     auto const inner_d_n  = blaze::inner(d, fplane_n);
-    auto const inner_ds_n = blaze::inner(ds, fplane_n);
+    auto const inner_ds_n = blaze::inner(sphere_ds, fplane_n);
     auto const dt         = utils::toDt(timestep);
 
     // Scalar of trajectory for the point of collision

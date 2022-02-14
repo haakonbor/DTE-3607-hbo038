@@ -39,8 +39,8 @@ namespace dte3607::physengine::solver_dev::level2
       for (auto j = 0; j < planes.size(); j++) {
 
         auto x = mechanics::detectCollisionSphereFixedPlane(
-          spheres[i].t_c, spheres[i].p, spheres[i].r, spheres[i].v, planes[j].p,
-          planes[j].n, params.F, params.t_0, params.timestep);
+          spheres[i].t_c, spheres[i].p, spheres[i].r, spheres[i].current_ds,
+          planes[j].p, planes[j].n, params.t_0, params.timestep);
 
         if (x.has_value()) {
           intersections.emplace_back(spheres[i], spheres[0], planes[j],
@@ -54,8 +54,8 @@ namespace dte3607::physengine::solver_dev::level2
         }
 
         auto x = mechanics::detectCollisionSphereSphere(
-          spheres[i].t_c, spheres[i].p, spheres[i].r, spheres[i].v,
-          spheres[j].t_c, spheres[j].p, spheres[j].r, spheres[j].v, params.F,
+          spheres[i].t_c, spheres[i].p, spheres[i].r, spheres[i].current_ds,
+          spheres[j].t_c, spheres[j].p, spheres[j].r, spheres[j].current_ds,
           params.t_0, params.timestep);
 
         if (x.has_value()) {
@@ -161,14 +161,17 @@ namespace dte3607::physengine::solver_dev::level2
   }
 
   template <typename Sphere_T, typename Params_T>
-  void initTimepoints(Sphere_T& spheres, Params_T& params)
+  void computeCache(Sphere_T& spheres, Params_T& params)
   {
     auto now = types::HighResolutionClock::now();
 
     params.t_0 = now;
 
     for (auto& sphere : spheres) {
-      sphere.t_c = now;
+      sphere.t_c        = now;
+      sphere.current_ds = mechanics::computeLinearTrajectory(sphere.v, params.F,
+                                                             params.timestep)
+                            .first;
     }
   }
 
@@ -180,7 +183,7 @@ namespace dte3607::physengine::solver_dev::level2
     params.F        = scenario.m_forces;
     params.timestep = timestep;
 
-    initTimepoints(scenario.m_backend.m_sphere_data, params);
+    computeCache(scenario.m_backend.m_sphere_data, params);
 
     detectCollisions(scenario.m_backend.m_intersection_data,
                      scenario.m_backend.m_sphere_data,
@@ -192,6 +195,7 @@ namespace dte3607::physengine::solver_dev::level2
     while (sortedCollisions.size() > 0) {
       handleFirstCollision(sortedCollisions, params);
       scenario.m_backend.m_intersection_data.clear();
+      computeCache(scenario.m_backend.m_sphere_data, params);
       detectCollisions(scenario.m_backend.m_intersection_data,
                        scenario.m_backend.m_sphere_data,
                        scenario.m_backend.m_fplane_data, params);

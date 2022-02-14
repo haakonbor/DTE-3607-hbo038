@@ -19,8 +19,6 @@ namespace dte3607::physengine::solver_types
 
     Vector3 out_a;    // Acceleration
     Vector3 out_ds;   // Trajectory
-
-    // types::HighResolutionTP t_c;   // Current timepoint
   };
 
   struct SimProcDataBlock {

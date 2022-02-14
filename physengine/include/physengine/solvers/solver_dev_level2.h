@@ -33,15 +33,14 @@ namespace dte3607::physengine::solver_dev::level2
   template <typename Intersect_T, typename Plane_T, typename Sphere_T,
             typename Params_T>
   void detectCollisions(Intersect_T& intersections, Sphere_T& spheres,
-                        Plane_T& planes, Params_T& params, uint8_t prime)
+                        Plane_T& planes, Params_T& params)
   {
     for (auto i = 0; i < spheres.size(); i++) {
       for (auto j = 0; j < planes.size(); j++) {
 
         auto x = mechanics::detectCollisionSphereFixedPlane(
           spheres[i].t_c, spheres[i].p, spheres[i].r, spheres[i].v, planes[j].p,
-          planes[j].n, params.F, params.t_0,
-          params.timestep - prime * (spheres[i].t_c - params.t_0));
+          planes[j].n, params.F, params.t_0, params.timestep);
 
         if (x.has_value()) {
           intersections.emplace_back(spheres[i], spheres[0], planes[j],
@@ -83,19 +82,19 @@ namespace dte3607::physengine::solver_dev::level2
       sorted_intersections;
 
     for (auto intersection : intersections) {
-      bool is_copy = false;
+      auto it  = sorted_intersections.begin();
+      auto end = sorted_intersections.end();
 
-      for (auto it = sorted_intersections.begin();
-           it != sorted_intersections.end(); it++) {
+      for (; it != end; it++) {
         if (intersection.fixed == false
             && (*it).sphere2.p == intersection.sphere1.p
             && (*it).sphere1.p == intersection.sphere2.p
             && (*it).col_tp == intersection.col_tp) {
-          is_copy = true;
+          break;
         }
       }
 
-      if (!is_copy) {
+      if (it == end) {
         sorted_intersections.insert(intersection);
       }
     }
@@ -185,7 +184,7 @@ namespace dte3607::physengine::solver_dev::level2
 
     detectCollisions(scenario.m_backend.m_intersection_data,
                      scenario.m_backend.m_sphere_data,
-                     scenario.m_backend.m_fplane_data, params, 0);
+                     scenario.m_backend.m_fplane_data, params);
 
     auto sortedCollisions
       = sortAndReduce(scenario.m_backend.m_intersection_data);
@@ -195,7 +194,7 @@ namespace dte3607::physengine::solver_dev::level2
       scenario.m_backend.m_intersection_data.clear();
       detectCollisions(scenario.m_backend.m_intersection_data,
                        scenario.m_backend.m_sphere_data,
-                       scenario.m_backend.m_fplane_data, params, 0);
+                       scenario.m_backend.m_fplane_data, params);
       sortedCollisions = sortAndReduce(scenario.m_backend.m_intersection_data);
     }
 

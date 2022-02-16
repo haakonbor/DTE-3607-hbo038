@@ -154,6 +154,7 @@ namespace dte3607::physengine::solver_dev::level2
 
         collision.sphere1.v   = new_vs.first;
         collision.sphere1.t_c = collision.col_tp;
+
         collision.sphere2.v   = new_vs.second;
         collision.sphere2.t_c = collision.col_tp;
       }
@@ -161,7 +162,7 @@ namespace dte3607::physengine::solver_dev::level2
   }
 
   template <typename Sphere_T, typename Params_T>
-  void computeCache(Sphere_T& spheres, Params_T& params)
+  void initCache(Sphere_T& spheres, Params_T& params)
   {
     auto now = types::HighResolutionClock::now();
 
@@ -169,6 +170,16 @@ namespace dte3607::physengine::solver_dev::level2
 
     for (auto& sphere : spheres) {
       sphere.t_c        = now;
+      sphere.current_ds = mechanics::computeLinearTrajectory(sphere.v, params.F,
+                                                             params.timestep)
+                            .first;
+    }
+  }
+
+  template <typename Sphere_T, typename Params_T>
+  void computeCache(Sphere_T& spheres, Params_T& params)
+  {
+    for (auto& sphere : spheres) {
       sphere.current_ds = mechanics::computeLinearTrajectory(sphere.v, params.F,
                                                              params.timestep)
                             .first;
@@ -183,7 +194,7 @@ namespace dte3607::physengine::solver_dev::level2
     params.F        = scenario.m_forces;
     params.timestep = timestep;
 
-    computeCache(scenario.m_backend.m_sphere_data, params);
+    initCache(scenario.m_backend.m_sphere_data, params);
 
     detectCollisions(scenario.m_backend.m_intersection_data,
                      scenario.m_backend.m_sphere_data,

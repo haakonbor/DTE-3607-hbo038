@@ -106,13 +106,18 @@ namespace dte3607::physengine::solver_dev::level2
   void simulateObject(Data_T& collision, Params_T const& params)
   {
     auto [ds1, a1] = mechanics::computeLinearTrajectory(
-      collision.sphere1.v, params.F, collision.col_tp - collision.sphere1.t_c);
+      collision.sphere1.v, params.F, params.timestep);
 
-    collision.sphere1.ds += ds1;
-    collision.sphere1.a += a1;
+    auto collision_scalar
+      = utils::toDt(collision.col_tp - collision.sphere1.t_c)
+        / utils::toDt(params.timestep);
+    ds1 *= collision_scalar;
 
-    collision.sphere1.p += ds1;
-    collision.sphere1.v += a1;
+    collision.sphere1.ds += collision.sphere1.current_ds * collision_scalar;
+    collision.sphere1.a += a1 * collision_scalar;
+
+    collision.sphere1.p += collision.sphere1.current_ds * collision_scalar;
+    collision.sphere1.v += a1 * collision_scalar;
 
     if (!collision.fixed) {
       auto [ds2, a2] = mechanics::computeLinearTrajectory(
@@ -120,10 +125,10 @@ namespace dte3607::physengine::solver_dev::level2
         collision.col_tp - collision.sphere2.t_c);
 
       collision.sphere2.ds += ds2;
-      collision.sphere2.a += a2;
+      collision.sphere2.a += a2 * collision_scalar;
 
       collision.sphere2.p += ds2;
-      collision.sphere2.v += a2;
+      collision.sphere2.v += a2 * collision_scalar;
     }
   }
 
@@ -146,6 +151,10 @@ namespace dte3607::physengine::solver_dev::level2
 
         collision.sphere1.v   = new_v;
         collision.sphere1.t_c = collision.col_tp;
+        collision.sphere1.current_ds
+          = mechanics::computeLinearTrajectory(collision.sphere1.v, params.F,
+                                               params.timestep)
+              .first;
       }
       else {
         auto new_vs = mechanics::computeImpactResponseSphereSphere(
@@ -154,9 +163,17 @@ namespace dte3607::physengine::solver_dev::level2
 
         collision.sphere1.v   = new_vs.first;
         collision.sphere1.t_c = collision.col_tp;
+        collision.sphere1.current_ds
+          = mechanics::computeLinearTrajectory(collision.sphere1.v, params.F,
+                                               params.timestep)
+              .first;
 
         collision.sphere2.v   = new_vs.second;
         collision.sphere2.t_c = collision.col_tp;
+        collision.sphere2.current_ds
+          = mechanics::computeLinearTrajectory(collision.sphere2.v, params.F,
+                                               params.timestep)
+              .first;
       }
     }
   }
@@ -170,16 +187,8 @@ namespace dte3607::physengine::solver_dev::level2
 
     for (auto& sphere : spheres) {
       sphere.t_c        = now;
-      sphere.current_ds = mechanics::computeLinearTrajectory(sphere.v, params.F,
-                                                             params.timestep)
-                            .first;
-    }
-  }
-
-  template <typename Sphere_T, typename Params_T>
-  void computeCache(Sphere_T& spheres, Params_T& params)
-  {
-    for (auto& sphere : spheres) {
+      sphere.ds         = {0, 0, 0};
+      sphere.a          = {0, 0, 0};
       sphere.current_ds = mechanics::computeLinearTrajectory(sphere.v, params.F,
                                                              params.timestep)
                             .first;
@@ -206,7 +215,6 @@ namespace dte3607::physengine::solver_dev::level2
     while (sortedCollisions.size() > 0) {
       handleFirstCollision(sortedCollisions, params);
       scenario.m_backend.m_intersection_data.clear();
-      computeCache(scenario.m_backend.m_sphere_data, params);
       detectCollisions(scenario.m_backend.m_intersection_data,
                        scenario.m_backend.m_sphere_data,
                        scenario.m_backend.m_fplane_data, params);

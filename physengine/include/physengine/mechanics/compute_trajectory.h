@@ -15,9 +15,9 @@ namespace dte3607::physengine::mechanics
   {
     auto const dt = utils::toDt(timestep);
 
-    auto const a = external_forces * dt;
+    types::Vector3 const a = external_forces * dt;
 
-    auto const ds = (velocity + 0.5 * a) * dt;
+    types::Vector3 const ds = (velocity + 0.5 * a) * dt;
 
     return {ds, a};
   }

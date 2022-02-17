@@ -38,7 +38,7 @@ struct SolverDevLevel2Step1_Fixture001 : ::testing::Test {
     m_scenario = std::make_unique<TestFixture>();
 
     // Set external forces
-    m_scenario->setGravity({0, 0, 0});
+    m_scenario->setGravity({0, -9.81, 0});
 
     // make plane
     m_scenario->createFixedInfPlane({-1, 0, 0}, {10, 0, 0});
@@ -80,7 +80,7 @@ struct SolverDevLevel2Step1_Fixture002 : ::testing::Test {
     m_scenario = std::make_unique<TestFixture>();
 
     // Set external forces
-    m_scenario->setGravity({0, 0, 0});
+    m_scenario->setGravity({0, -9.81, 0});
 
     // make plane(s)
     // yz+ plane
@@ -128,7 +128,7 @@ struct SolverDevLevel2Step2_Fixture001 : ::testing::Test {
     m_scenario = std::make_unique<TestFixture>();
 
     // Set external forces
-    m_scenario->setGravity({0, 0, 0});
+    m_scenario->setGravity({0, -9.81, 0});
 
     // make plane
     m_scenario->createFixedInfPlane({-1, 0, 0}, {10, 0, 0});
@@ -169,7 +169,7 @@ struct SolverDevLevel2Step2_Fixture002 : ::testing::Test {
 
 
     // Set external forces
-    m_scenario->setGravity({0, 0, 0});
+    m_scenario->setGravity({0, -9.81, 0});
 
 
     // make plane
@@ -224,7 +224,7 @@ struct SolverDevLevel2Step2_Fixture003 : ::testing::Test {
 
 
     // Set external forces
-    m_scenario->setGravity({0, 0, 0});
+    m_scenario->setGravity({0, -9.81, 0});
 
 
     // make plane
@@ -271,6 +271,107 @@ struct SolverDevLevel2Step2_Fixture003 : ::testing::Test {
 
 TEST_F(SolverDevLevel2Step2_Fixture003, Test001)
 {
+
+  for (size_t i = 0; i < 1; i++) {
+    solver_dev::level2::solve(*m_scenario, 17ms);
+  }
+
+
+  // Expect to be inbetween the planes
+  for (auto const& s_rid : m_scenario->nonFixedSphereRBs()) {
+    for (auto const& p_rid : m_scenario->fixedInfPlaneRBs()) {
+
+      auto const  pn  = m_scenario->rbPlaneNormal(p_rid);
+      auto const  pp  = m_scenario->globalFramePosition(p_rid);
+      auto const  sp  = m_scenario->globalFramePosition(s_rid);
+      auto const  sr  = m_scenario->rbSphereRadius(s_rid);
+      auto const& d   = sp - pp;
+      auto const  pnd = blaze::inner(pn, d) - sr;
+      EXPECT_GT(pnd, 0);
+    }
+  }
+}
+
+struct SolverDevLevel2Step2_Fixture004 : ::testing::Test {
+
+  using TestFixture = fixtures::FixtureLevel2;
+  std::unique_ptr<TestFixture> m_scenario;
+
+  using ::testing::Test::Test;
+
+  void SetUp() final
+  {
+    // Create Fixture
+    m_scenario = std::make_unique<TestFixture>();
+
+    // Set external forces
+    m_scenario->setGravity({0, -9.81, 0});
+
+    // make plane
+    m_scenario->createFixedInfPlane({0, 1, 0}, {0, -10, 0});
+
+    // make sphere
+    m_scenario->createSphere(1.0, {0, 0, 0}, {0, 0, 0});
+  }
+  void TearDown() final { m_scenario.release(); }
+};
+
+
+
+TEST_F(SolverDevLevel2Step2_Fixture004, Test001)
+{
+  solver_dev::level2::solve(*m_scenario, 1915ms);
+
+  auto no_rbs = m_scenario->noRigidBodies();
+  for (auto rid = 0; rid < no_rbs; ++rid) {
+    // Ask for global frame position of object nr. i
+    auto const pos = m_scenario->globalFramePosition(rid);
+    EXPECT_GT(pos[1], -10.1);
+  }
+}
+
+struct SolverDevLevel2Step2_Fixture006 : ::testing::Test {
+
+  using TestFixture = fixtures::FixtureLevel2;
+  std::unique_ptr<TestFixture> m_scenario;
+
+  using ::testing::Test::Test;
+
+  void SetUp() final
+  {
+    // Create Fixture
+    m_scenario = std::make_unique<TestFixture>();
+
+
+    // Set external forces
+    m_scenario->setGravity({0, -10, 0});
+
+
+    // make plane
+    m_scenario->createFixedInfPlane({-1, 0, 0}, {10, 0, 0});
+    m_scenario->createFixedInfPlane({1, 0, 0}, {-10, 0, 0});
+    m_scenario->createFixedInfPlane({0, 0, -1}, {0, 0, 10});
+    m_scenario->createFixedInfPlane({0, 0, 1}, {0, 0, -10});
+    m_scenario->createFixedInfPlane({0, -1, 0}, {0, 10, 0});
+    m_scenario->createFixedInfPlane({0, 1, 0}, {0, -10, 0});
+
+
+    //    m_scenario->createSphere(1.0, {-6.08666, 6.37682, -14.6125}, {-2, -2,
+    //    -2}); m_scenario->createSphere(1.0, {1.50076, 8.83279, -1.61018}, {-2,
+    //    -2, 0}); m_scenario->createSphere(1.0, {3.68052, 9.21226, -10.6208},
+    //    {-2, 0, -2}); m_scenario->createSphere(1.0,
+    //    {-7.51809, 8.21472, 3.32059}, {-2, 0, 0});
+    //    m_scenario->createSphere(1.0, {6.71607, 6.70583, -8.81118}, {0, -2,
+    //    -2}); m_scenario->createSphere(1.0, {-5.58638, 6.91526, 6.15576}, {0,
+    //    -2, 0});
+    m_scenario->createSphere(1.0, {17.1969, 5.37975, -0.539138}, {0, 0, -2});
+    m_scenario->createSphere(1.0, {10.4701, 7.15313, -4.78798}, {0, 0, 0});
+  }
+  void TearDown() final { m_scenario.release(); }
+};
+
+TEST_F(SolverDevLevel2Step2_Fixture006, Test001)
+{
   solver_dev::level2::solve(*m_scenario, 1s);
 
   // Expect to be inbetween the planes
@@ -303,7 +404,7 @@ struct SolverDevLevel2Step3_Fixture001 : ::testing::Test {
 
 
     // Set external forces
-    m_scenario->setGravity({0, 0, 0});
+    m_scenario->setGravity({0, -9.81, 0});
 
 
     // make plane

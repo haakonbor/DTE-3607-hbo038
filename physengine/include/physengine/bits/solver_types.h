@@ -35,6 +35,7 @@ namespace dte3607::physengine::solver_types
     Vector3                 ds;
     Vector3                 current_ds;
     Vector3                 a;
+    Vector3                 current_a;
     types::HighResolutionTP t_c;   // Current timepoint
   };
 

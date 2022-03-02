@@ -7,16 +7,17 @@
 #include <algorithm>
 
 
-namespace dte3607::benchmarking::predef {
+namespace dte3607::benchmarking::predef
+{
 
-    struct GoldDummyBenchmarkF : benchmark::Fixture {
+  struct GoldDummyBenchmarkF : benchmark::Fixture {
 
-      using benchmark::Fixture::Fixture;
-      ~GoldDummyBenchmarkF() override {}
+    using benchmark::Fixture::Fixture;
+    ~GoldDummyBenchmarkF() override {}
 
-      void SetUp(benchmark::State const&) final {}
-      void TearDown(benchmark::State const&) override {}
-    };
+    void SetUp(benchmark::State const&) final {}
+    void TearDown(benchmark::State const&) override {}
+  };
 
 }   // namespace dte3607::benchmarking::predef
 
@@ -27,16 +28,12 @@ using namespace dte3607::benchmarking::predef;
 
 // Dummy benchmarks
 BENCHMARK_DEFINE_F(GoldDummyBenchmarkF, dummy01)
-(benchmark::State& st)
-{
-  for ([[maybe_unused]]auto const& _ : st)
-    std::cout << "Hello world!\n";
-}
+(benchmark::State& st) { for ([[maybe_unused]] auto const& _ : st) }
 
 BENCHMARK_DEFINE_F(GoldDummyBenchmarkF, dummy02)
 (benchmark::State& st)
 {
-  for ([[maybe_unused]]auto const& _ : st)
+  for ([[maybe_unused]] auto const& _ : st)
     std::cout << "Hello world!" << std::endl;
 }
 

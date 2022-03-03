@@ -38,7 +38,7 @@ struct SolverDevLevel2Step1_Fixture001 : ::testing::Test {
     m_scenario = std::make_unique<TestFixture>();
 
     // Set external forces
-    m_scenario->setGravity({0, -9.81, 0});
+    m_scenario->setGravity({0, 0, 0});
 
     // make plane
     m_scenario->createFixedInfPlane({-1, 0, 0}, {10, 0, 0});
@@ -80,7 +80,7 @@ struct SolverDevLevel2Step1_Fixture002 : ::testing::Test {
     m_scenario = std::make_unique<TestFixture>();
 
     // Set external forces
-    m_scenario->setGravity({0, -9.81, 0});
+    m_scenario->setGravity({0, 0, 0});
 
     // make plane(s)
     // yz+ plane
@@ -128,7 +128,7 @@ struct SolverDevLevel2Step2_Fixture001 : ::testing::Test {
     m_scenario = std::make_unique<TestFixture>();
 
     // Set external forces
-    m_scenario->setGravity({0, -9.81, 0});
+    m_scenario->setGravity({0, 0, 0});
 
     // make plane
     m_scenario->createFixedInfPlane({-1, 0, 0}, {10, 0, 0});
@@ -169,7 +169,7 @@ struct SolverDevLevel2Step2_Fixture002 : ::testing::Test {
 
 
     // Set external forces
-    m_scenario->setGravity({0, -9.81, 0});
+    m_scenario->setGravity({0, 0, 0});
 
 
     // make plane
@@ -224,7 +224,7 @@ struct SolverDevLevel2Step2_Fixture003 : ::testing::Test {
 
 
     // Set external forces
-    m_scenario->setGravity({0, -9.81, 0});
+    m_scenario->setGravity({0, 0, 0});
 
 
     // make plane
@@ -272,7 +272,7 @@ struct SolverDevLevel2Step2_Fixture003 : ::testing::Test {
 TEST_F(SolverDevLevel2Step2_Fixture003, Test001)
 {
 
-  for (size_t i = 0; i < 1; i++) {
+  for (size_t i = 0; i < 60; i++) {
     solver_dev::level2::solve(*m_scenario, 17ms);
   }
 
@@ -305,7 +305,7 @@ struct SolverDevLevel2Step2_Fixture004 : ::testing::Test {
     m_scenario = std::make_unique<TestFixture>();
 
     // Set external forces
-    m_scenario->setGravity({0, -9.81, 0});
+    m_scenario->setGravity({0, 0, 0});
 
     // make plane
     m_scenario->createFixedInfPlane({0, 1, 0}, {0, -10, 0});
@@ -344,7 +344,7 @@ struct SolverDevLevel2Step2_Fixture006 : ::testing::Test {
 
 
     // Set external forces
-    m_scenario->setGravity({0, -10, 0});
+    m_scenario->setGravity({0, 0, 0});
 
 
     // make plane
@@ -404,7 +404,7 @@ struct SolverDevLevel2Step3_Fixture001 : ::testing::Test {
 
 
     // Set external forces
-    m_scenario->setGravity({0, -9.81, 0});
+    m_scenario->setGravity({0, 0, 0});
 
 
     // make plane

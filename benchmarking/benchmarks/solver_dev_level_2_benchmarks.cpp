@@ -15,7 +15,7 @@ using namespace std::chrono_literals;
 
 namespace dte3607::benchmarking::predef
 {
-  size_t BENCHMARK_SIZE = 10;
+  size_t BENCHMARK_SIZE = 1;
 
   struct SolverLevel2BenchmarkF : benchmark::Fixture {
 

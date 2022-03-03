@@ -169,6 +169,7 @@ namespace dte3607::physengine::solver_dev::level2
 
     for (auto& sphere : spheres) {
       sphere.t_c = now;
+      sphere.ds  = {0.0, 0.0, 0.0};
     }
   }
 

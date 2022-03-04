@@ -15,7 +15,7 @@ using namespace std::chrono_literals;
 
 namespace dte3607::benchmarking::predef
 {
-  size_t BENCHMARK_SIZE = 1;
+  size_t BENCHMARK_SIZE = 10;
 
   struct SolverLevel2BenchmarkF : benchmark::Fixture {
 
@@ -41,16 +41,16 @@ namespace dte3607::benchmarking::predef
 
       for (int i = 0; i < BENCHMARK_SIZE; i++) {
         // make sphere
-        m_scenario->createSphere(1.0, {100, 0, 0}, {1, 0, i * 5.0});
-        m_scenario->createSphere(1.0, {100, 0, 0}, {2, 0, i * 5.0 + 1});
-        m_scenario->createSphere(1.0, {100, 0, 0}, {3, 0, i * 5.0 + 2});
-        m_scenario->createSphere(1.0, {100, 0, 0}, {4, 0, i * 5.0 + 3});
-        m_scenario->createSphere(1.0, {100, 0, 0}, {5, 0, i * 5.0 + 4});
-        m_scenario->createSphere(1.0, {-100, 0, 0}, {-1, 0, i * 5.0});
-        m_scenario->createSphere(1.0, {-100, 0, 0}, {-2, 0, i * 5.0 + 1});
-        m_scenario->createSphere(1.0, {-100, 0, 0}, {-3, 0, i * 5.0 + 2});
-        m_scenario->createSphere(1.0, {-100, 0, 0}, {-4, 0, i * 5.0 + 3});
-        m_scenario->createSphere(1.0, {-100, 0, 0}, {-5, 0, i * 5.0 + 4});
+        m_scenario->createSphere(1.0, {-1000, 0, 0}, {1, 0, i * 5.0});
+        m_scenario->createSphere(1.0, {-1000, 0, 0}, {2, 0, i * 5.0 + 1});
+        m_scenario->createSphere(1.0, {-1000, 0, 0}, {3, 0, i * 5.0 + 2});
+        m_scenario->createSphere(1.0, {-1000, 0, 0}, {4, 0, i * 5.0 + 3});
+        m_scenario->createSphere(1.0, {-1000, 0, 0}, {5, 0, i * 5.0 + 4});
+        m_scenario->createSphere(1.0, {1000, 0, 0}, {-1, 0, i * 5.0});
+        m_scenario->createSphere(1.0, {1000, 0, 0}, {-2, 0, i * 5.0 + 1});
+        m_scenario->createSphere(1.0, {1000, 0, 0}, {-3, 0, i * 5.0 + 2});
+        m_scenario->createSphere(1.0, {1000, 0, 0}, {-4, 0, i * 5.0 + 3});
+        m_scenario->createSphere(1.0, {1000, 0, 0}, {-5, 0, i * 5.0 + 4});
       }
     }
 
